@@ -14,15 +14,17 @@ var dhc = {};
                 attribution: 'Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
             }),
         geocode_layer = new L.GeoJSON(null)
-        bingMapsCallback = function(data) {
+        bingMapsCallback = function(data, address) {
             if (data && data.resourceSets && data.resourceSets.length && data.resourceSets[0].resources && data.resourceSets[0].resources.length && data.resourceSets[0].resources[0].point) {
 
                 // F'real bing? you got lat,lng mixed up? #headdesk
                 point = data.resourceSets[0].resources[0].point;
-                point.coordinates = [point.coordinates[1], point.coordinates[0]]
+                point.coordinates = [point.coordinates[1], point.coordinates[0]];
 
-                geocode_layer.addData(point);
-                dhc.map.setView([point.coordinates[1], point.coordinates[0]], 12)
+                setCurrentLocation(address, point)
+                
+            } else {
+                setCurrentLocation(address, null);
             }
         },
         setSliderText = function(criteria_type, value) {
@@ -38,24 +40,48 @@ var dhc = {};
         adjustCriteriaValue = function (criteria_type, value) {
             console.log('time to query')
         },
+        setCurrentLocation = function(address, point) {
+            // If we get address and no point, we couldn't geocode
+            geocode_layer.clearLayers();
+            if (point) {
+                geocode_layer.addData(point);
+                dhc.map.setView([point.coordinates[1], point.coordinates[0]], 12);
+                $('#location')
+                    .removeClass('alert-error')
+                    .addClass('alert-success');
+                $('#location-address').html(address);
+            } else {
+                $('#location')
+                    .removeClass('alert-success')
+                    .addClass('alert-error');
+                $('#location-address').html('Could not find "' + address + '"');
+            }
+            $('#location').show();
+        },
         criteria = {
             light_rail: {
-                min: 0,
-                max: 10,
-                value: 2,
-                step: 0.1
+                slider_settings: {
+                    min: 0,
+                    max: 10,
+                    value: 2,
+                    step: 0.1
+                }
             },
             bus_stops: {
-                min: 0,
-                max: 5,
-                value: 1,
-                step: 0.1
+                slider_settings: {
+                    min: 0,
+                    max: 5,
+                    value: 1,
+                    step: 0.1
+                }
             },
             parks: {
-                min: 0,
-                max: 2,
-                value: 1,
-                step: 0.1
+                slider_settings: {
+                    min: 0,
+                    max: 2,
+                    value: 1,
+                    step: 0.1
+                }
             }
         };
 
@@ -73,11 +99,12 @@ var dhc = {};
 
     $('#address-form').on('submit', function (event) {
         event.preventDefault();
-        if ($('#address').val().length <= 0) {
+        var address = $('#address').val();
+        if (address.length <= 0) {
             return;
         }
         var params = {
-            query: $('#address').val(),
+            query: address,
             key: BING_MAPS_KEY
         };
         $.ajax({
@@ -85,7 +112,9 @@ var dhc = {};
             jsonp: 'jsonp',
             data: params,
             dataType: 'jsonp',
-            success: bingMapsCallback
+            success: function (data) {
+                bingMapsCallback(data, address);
+            }
         })
     });
 
@@ -98,7 +127,7 @@ var dhc = {};
     $('.criteria').each(function (i, o) {
         var $criteria_div = $(o),
             criteria_type = $criteria_div.data('criteria-type'),
-            criteria_settings = criteria[criteria_type],
+            criteria_settings = criteria[criteria_type].slider_settings,
             $criteria_slider = $criteria_div.find('.criteria-slider');
         $criteria_slider.slider({
             min: criteria_settings.min,
