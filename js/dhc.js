@@ -24,6 +24,39 @@ var dhc = {};
                 geocode_layer.addData(point);
                 dhc.map.setView([point.coordinates[1], point.coordinates[0]], 12)
             }
+        },
+        setSliderText = function(criteria_type, value) {
+            $('.criteria').each(function (i, o) {
+                var $criteria_div = $(o),
+                    criteria_div_type = $criteria_div.data('criteria-type');
+                if (criteria_div_type === criteria_type) {
+                    $criteria_div.find('.distance-label').html('< ' + value + ' mile' + (value === 1 ? '' : 's'))
+                    return false;
+                }
+            });
+        },
+        adjustCriteriaValue = function (criteria_type, value) {
+            console.log('time to query')
+        },
+        criteria = {
+            light_rail: {
+                min: 0,
+                max: 10,
+                value: 2,
+                step: 0.1
+            },
+            bus_stops: {
+                min: 0,
+                max: 5,
+                value: 1,
+                step: 0.1
+            },
+            parks: {
+                min: 0,
+                max: 2,
+                value: 1,
+                step: 0.1
+            }
         };
 
     dhc.map = new L.Map('map-container', {
@@ -60,5 +93,27 @@ var dhc = {};
         event.preventDefault();
         $('#address').val('7910 S Bemis St, Littleton, CO');
         $('#address-form').submit();
-    })
+    });
+
+    $('.criteria').each(function (i, o) {
+        var $criteria_div = $(o),
+            criteria_type = $criteria_div.data('criteria-type'),
+            criteria_settings = criteria[criteria_type],
+            $criteria_slider = $criteria_div.find('.criteria-slider');
+        $criteria_slider.slider({
+            min: criteria_settings.min,
+            max: criteria_settings.max,
+            step: criteria_settings.step,
+            value: criteria_settings.value,
+            slide: function (event, ui) {
+                setSliderText(criteria_type, ui.value);
+            },
+            change: function (event, ui) {
+                setSliderText(criteria_type, ui.value);
+            },
+            stop: function (event, ui) {
+                adjustCriteriaValue(criteria_type, ui.value);
+            }
+        }).slider('value', criteria_settings.value);
+    });
 }())

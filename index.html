@@ -10,6 +10,7 @@
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -35,11 +36,30 @@
     <div class="container">
         <div class="row-fluid">
             <div class="span4">
-                <form class="form-inline" id="address-form">
-                    <input type="text" id="address" name="address" placeholder="Type an address">
-                    <button type="submit" class="btn">Go</button>
-                    <span class="help-block" style="margin-top: 6px;">Try: 7910 S Bemis St, Littleton, CO - <a href="#example" id="paste-example">do it</a></span>
-                </form>
+                <div>
+                    <h4>1. Set Location</h4>
+                    <form class="form-inline" id="address-form">
+                        <input type="text" id="address" name="address" placeholder="Type an address">
+                        <button type="submit" class="btn">Go</button>
+                        <span class="help-block" style="margin-top: 6px;">Try: 7910 S Bemis St, Littleton, CO - <a href="#example" id="paste-example">do it</a></span>
+                    </form>
+                </div>
+                <div>
+                    <h4>2. Set Criteria</h4>
+                    <div class="criteria alert" data-criteria-type="light_rail">
+                        <h5>Light Rail Stations <small class="distance-label"></small></h5>
+                        <div class="criteria-slider"></div>
+                    </div>
+                    <div class="criteria alert" data-criteria-type="bus_stops">
+                        <h5>Bus Stops <small class="distance-label"></small></h5>
+                        <div class="criteria-slider"></div>
+                    </div>
+                    <div class="criteria alert" data-criteria-type="parks">
+                        <h5>Parks <small class="distance-label"></small></h5>
+                        <div class="criteria-slider"></div>
+                    </div>
+                    
+                </div>
             </div>
             <div class="span8" style="height: 500px;">
                 <div id="map-container" style="height: 100%;"></div>
@@ -50,6 +70,7 @@
         </footer>
     </div>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>
     <script src="js/dhc.js"></script>
