@@ -37,12 +37,104 @@ var dhc = {};
                 }
             });
         },
+        getCriteriaPoints = function (criteria_type, value) {
+            if (!geocode_layer.projected_point) {
+                setTimeout(function () {
+                    getCriteriaPoints(criteria_type, value);
+                }, 100);
+                return;
+            }
+            //parameters=&distance=2000&order=&limit=&format=json
+            var this_criteria = criteria[criteria_type],
+                fields = this_criteria.fields,
+                distance_feet = value * 5280;
+            var params = {
+                x: geocode_layer.projected_point.coordinates[0],
+                y: geocode_layer.projected_point.coordinates[1],
+                srid: 2232,
+                geotable: this_criteria.layer_name,
+                //fields: fields.join(','),
+                parameters: '',
+                distance: distance_feet,
+                limit: '',
+                order: '',
+                format: 'json'
+            };
+            $.ajax({
+                url: 'http://gis.drcog.org/REST/v1/ws_geo_bufferpoint.php?' + $.param(params) + '&fields=' + fields.join(',') + ',' + 'st_asgeojson(transform(the_geom,4326))+as+geojson',
+                data: params,
+                dataType: 'jsonp',
+                success: function (data) {
+                    processCriteriaPoints(criteria_type, data);
+                }
+            });
+        },
+        processCriteriaPoints = function (criteria_type, data) {
+            var this_criteria = criteria[criteria_type];
+            if (data && data.total_rows && parseInt(data.total_rows, 10) > 0) {
+                var feature_collection = {
+                    type: 'FeatureCollection',
+                    features: []
+                }
+                for (i in data.rows) {
+                    var geojson,
+                        row = data.rows[i].row,
+                        properties = {};
+                    for (key in row) {
+                        if (key === 'geojson') {
+                            geojson = row[key];
+                        } else {
+                            properties[key] = row[key];
+                        }
+                    }
+                    feature = {
+                        type: 'Feature',
+                        geometry: geojson,
+                        properties: properties
+                    }
+                    feature_collection.features.push(feature);
+                }
+                this_criteria.layer.addData(feature_collection);
+            }
+        },
         adjustCriteriaValue = function (criteria_type, value) {
-            console.log('time to query')
+            //console.log('time to query ' + criteria_type + ' within ' + value + ' miles.');
+            if (!criteria[criteria_type].layer) {
+                criteria[criteria_type].layer = new L.GeoJSON();
+                dhc.map.addLayer(criteria[criteria_type].layer);
+            }
+            criteria[criteria_type].layer.clearLayers();
+            getCriteriaPoints(criteria_type, value);
+        },
+        getProjectedPoint = function (point) {
+            var params = {
+                x: point.coordinates[0],
+                y: point.coordinates[1],
+                fromsrid: 4326,
+                tosrid: 2232,
+                format: 'json'
+            };
+            $.ajax({
+                url: 'http://gis.drcog.org/REST/v1/ws_geo_projectpoint.php',
+                data: params,
+                dataType: 'jsonp',
+                success: function (data) {
+                    processProjectedPoint(data);
+                }
+            });
+        },
+        processProjectedPoint = function (data) {
+            var x = parseFloat(data.rows[0].row.x_coordinate),
+                y = parseFloat(data.rows[0].row.y_coordinate);
+            geocode_layer.projected_point = {
+                type: 'Point',
+                coordinates: [x, y]
+            };
         },
         setCurrentLocation = function(address, point) {
             // If we get address and no point, we couldn't geocode
             geocode_layer.clearLayers();
+            geocode_layer.projected_point = null;
             if (point) {
                 geocode_layer.addData(point);
                 dhc.map.setView([point.coordinates[1], point.coordinates[0]], 12);
@@ -50,13 +142,28 @@ var dhc = {};
                     .removeClass('alert-error')
                     .addClass('alert-success');
                 $('#location-address').html(address);
+                getProjectedPoint(point);
+                updateFacilities();
             } else {
                 $('#location')
                     .removeClass('alert-success')
                     .addClass('alert-error');
                 $('#location-address').html('Could not find "' + address + '"');
+                clearFacilities();
             }
             $('#location').show();
+        },
+        clearFacilities = function () {
+
+        },
+        updateFacilities = function () {
+            $('.criteria').each(function (i, o) {
+                var $criteria_div = $(o),
+                    criteria_type = $criteria_div.data('criteria-type'),
+                    criteria_settings = criteria[criteria_type].slider_settings,
+                    $criteria_slider = $criteria_div.find('.criteria-slider');
+                adjustCriteriaValue(criteria_type, $criteria_slider.slider('value'));
+            });
         },
         criteria = {
             light_rail: {
@@ -65,7 +172,9 @@ var dhc = {};
                     max: 10,
                     value: 2,
                     step: 0.1
-                }
+                },
+                layer_name: 'rtd_lightrailstations',
+                fields: ['gid', 'name', 'local_rts', 'address']
             },
             bus_stops: {
                 slider_settings: {
@@ -73,7 +182,9 @@ var dhc = {};
                     max: 5,
                     value: 1,
                     step: 0.1
-                }
+                },
+                layer_name: 'rtd_busstops',
+                fields: ['gid']
             },
             parks: {
                 slider_settings: {
@@ -81,7 +192,9 @@ var dhc = {};
                     max: 2,
                     value: 1,
                     step: 0.1
-                }
+                },
+                layer_name: 'prkoscentroid',
+                fields: ['gid']
             }
         };
 
