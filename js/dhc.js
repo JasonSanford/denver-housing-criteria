@@ -13,7 +13,18 @@ var dhc = {};
                 subdomains: ['a', 'b', 'c', 'd'],
                 attribution: 'Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
             }),
-        geocode_layer = new L.GeoJSON(null)
+        geocode_layer = new L.GeoJSON(null, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {
+                    icon: L.icon({
+                        iconUrl: 'img/markers/home.png',
+                        iconSize: [32, 37],
+                        iconAnchor: [16, 37],
+                        popupAnchor: [0, -28]
+                    })
+                });
+            }
+        });
         bingMapsCallback = function(data, address) {
             if (data && data.resourceSets && data.resourceSets.length && data.resourceSets[0].resources && data.resourceSets[0].resources.length && data.resourceSets[0].resources[0].point) {
 
@@ -44,7 +55,6 @@ var dhc = {};
                 }, 100);
                 return;
             }
-            //parameters=&distance=2000&order=&limit=&format=json
             var this_criteria = criteria[criteria_type],
                 fields = this_criteria.fields,
                 distance_feet = value * 5280;
@@ -53,7 +63,6 @@ var dhc = {};
                 y: geocode_layer.projected_point.coordinates[1],
                 srid: 2232,
                 geotable: this_criteria.layer_name,
-                //fields: fields.join(','),
                 parameters: '',
                 distance: distance_feet,
                 limit: '',
@@ -70,7 +79,8 @@ var dhc = {};
             });
         },
         processCriteriaPoints = function (criteria_type, data) {
-            var this_criteria = criteria[criteria_type];
+            var this_criteria = criteria[criteria_type],
+                $criteria_div = $('#' + criteria_type);
             if (data && data.total_rows && parseInt(data.total_rows, 10) > 0) {
                 var feature_collection = {
                     type: 'FeatureCollection',
@@ -95,12 +105,42 @@ var dhc = {};
                     feature_collection.features.push(feature);
                 }
                 this_criteria.layer.addData(feature_collection);
+                $criteria_div
+                    .removeClass('alert-error')
+                    .addClass('alert-success')
+                    .find('.criteria-count').html('<strong style="font-size: 1.4em;">:-)</strong> Great! ' + parseInt(data.total_rows, 10) + ' ' + this_criteria.name + 's found.');
+            } else {
+                $criteria_div
+                    .removeClass('alert-success')
+                    .addClass('alert-error')
+                    .find('.criteria-count').html('<strong style="font-size: 1.4em;">:-(</strong> Sorry, 0 ' + this_criteria.name + 's found.');
             }
         },
         adjustCriteriaValue = function (criteria_type, value) {
-            //console.log('time to query ' + criteria_type + ' within ' + value + ' miles.');
-            if (!criteria[criteria_type].layer) {
-                criteria[criteria_type].layer = new L.GeoJSON();
+            var this_criteria = criteria[criteria_type];
+            if (!this_criteria.layer) {
+                this_criteria.layer = new L.GeoJSON(null, {
+                    pointToLayer: function (feature, latlng) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: 'img/markers/' + this_criteria.icon_name,
+                                iconSize: [32, 37],
+                                iconAnchor: [16, 37],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature && feature.properties) {
+                            var popup_content = '';
+                            for (key in feature.properties) {
+                                popup_content += '<strong>' + key + '</strong>: ' + feature.properties[key] + '<br>';
+                            }
+                            layer.bindPopup(popup_content);
+                        }
+                        
+                    }
+                });
                 dhc.map.addLayer(criteria[criteria_type].layer);
             }
             criteria[criteria_type].layer.clearLayers();
@@ -137,7 +177,7 @@ var dhc = {};
             geocode_layer.projected_point = null;
             if (point) {
                 geocode_layer.addData(point);
-                dhc.map.setView([point.coordinates[1], point.coordinates[0]], 12);
+                dhc.map.setView([point.coordinates[1], point.coordinates[0]], 14);
                 $('#location')
                     .removeClass('alert-error')
                     .addClass('alert-success');
@@ -168,33 +208,39 @@ var dhc = {};
         criteria = {
             light_rail: {
                 slider_settings: {
-                    min: 0,
+                    min: 0.1,
                     max: 10,
                     value: 2,
                     step: 0.1
                 },
+                name: 'light rail station',
+                icon_name: 'train.png',
                 layer_name: 'rtd_lightrailstations',
-                fields: ['gid', 'name', 'local_rts', 'address']
+                fields: ['name', 'address']
             },
             bus_stops: {
                 slider_settings: {
-                    min: 0,
+                    min: 0.1,
                     max: 5,
-                    value: 1,
+                    value: 0.3,
                     step: 0.1
                 },
+                name: 'bus stop',
+                icon_name: 'bus.png',
                 layer_name: 'rtd_busstops',
-                fields: ['gid']
+                fields: ['routes', 'stopname', 'dir', 'location']
             },
-            parks: {
+            b_cycle_stations: {
                 slider_settings: {
-                    min: 0,
+                    min: 0.1,
                     max: 2,
                     value: 1,
                     step: 0.1
                 },
-                layer_name: 'prkoscentroid',
-                fields: ['gid']
+                name: 'b-cycle station',
+                icon_name: 'bike.png',
+                layer_name: 'b_cycle_stations',
+                fields: ['station', 'city_loc']
             }
         };
 
@@ -233,7 +279,7 @@ var dhc = {};
 
     $('#paste-example').on('click', function (event) {
         event.preventDefault();
-        $('#address').val('7910 S Bemis St, Littleton, CO');
+        $('#address').val('1675 Larimer St, Denver, CO');
         $('#address-form').submit();
     });
 

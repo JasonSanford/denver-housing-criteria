@@ -41,7 +41,7 @@
                     <form class="form-inline" id="address-form">
                         <input type="text" id="address" name="address" placeholder="Type an address">
                         <button type="submit" class="btn">Go</button>
-                        <span class="help-block" style="margin-top: 6px;">Try: 7910 S Bemis St, Littleton, CO - <a href="#example" id="paste-example">do it</a></span>
+                        <span class="help-block" style="margin-top: 6px;">Try: 1675 Larimer St, Denver, CO - <a href="#example" id="paste-example">do it</a></span>
                     </form>
                 </div>
                 <div class="alert hide" id="location">
@@ -50,27 +50,30 @@
                 </div>
                 <div>
                     <h4>2. Set Criteria</h4>
-                    <div class="criteria alert" data-criteria-type="light_rail">
+                    <div class="criteria alert" id="light_rail" data-criteria-type="light_rail">
                         <h5>Light Rail Stations <small class="distance-label"></small></h5>
                         <div class="criteria-slider"></div>
+                        <p style="margin-top: 10px;"class="criteria-count"></p>
                     </div>
-                    <div class="criteria alert" data-criteria-type="bus_stops">
+                    <div class="criteria alert" id="bus_stops" data-criteria-type="bus_stops">
                         <h5>Bus Stops <small class="distance-label"></small></h5>
                         <div class="criteria-slider"></div>
+                        <p style="margin-top: 10px;" class="criteria-count"></p>
                     </div>
-                    <div class="criteria alert" data-criteria-type="parks">
-                        <h5>Parks <small class="distance-label"></small></h5>
+                    <div class="criteria alert" id="b_cycle_stations" data-criteria-type="b_cycle_stations">
+                        <h5>B-Cycle Stations <small class="distance-label"></small></h5>
                         <div class="criteria-slider"></div>
+                        <p style="margin-top: 10px;" class="criteria-count"></p>
                     </div>
                     
                 </div>
             </div>
-            <div class="span8" style="height: 500px;">
+            <div class="span8" style="height: 600px;">
                 <div id="map-container" style="height: 100%;"></div>
             </div>
         </div>
         <footer>
-            <p>&copy; Jason Sanford 2012</p>
+            <p>&copy; Jason Sanford 2013</p>
         </footer>
     </div>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
