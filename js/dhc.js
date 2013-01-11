@@ -279,7 +279,7 @@ var dhc = {};
 
     $('#paste-example').on('click', function (event) {
         event.preventDefault();
-        $('#address').val('1675 Larimer St, Denver, CO');
+        $('#address').val('Broadway & 11th, Denver, CO');
         $('#address-form').submit();
     });
 
