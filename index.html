@@ -13,8 +13,15 @@
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
     <style type="text/css">
       body {
-        padding-top: 60px;
-        padding-bottom: 40px;
+          padding-top: 60px;
+          padding-bottom: 40px;
+      }
+      .disabled {
+          background-color: #e0e0e0;
+          border-color: #999999;
+      }
+      .disabled h5 {
+          color: #999999;
       }
     </style>
 </head>
@@ -51,17 +58,17 @@
                 <div>
                     <h4>2. Set Criteria</h4>
                     <div class="criteria alert" id="light_rail" data-criteria-type="light_rail">
-                        <h5>Light Rail Stations <small class="distance-label"></small></h5>
+                        <h5><input type="checkbox" data-criteria-type="light_rail" class="toggle" style="vertical-align: top;" checked> Light Rail Stations <small class="distance-label"></small></h5>
                         <div class="criteria-slider"></div>
                         <p style="margin-top: 10px;"class="criteria-count"></p>
                     </div>
                     <div class="criteria alert" id="bus_stops" data-criteria-type="bus_stops">
-                        <h5>Bus Stops <small class="distance-label"></small></h5>
+                        <h5><input type="checkbox" data-criteria-type="bus_stops" class="toggle" style="vertical-align: top;" checked> Bus Stops <small class="distance-label"></small></h5>
                         <div class="criteria-slider"></div>
                         <p style="margin-top: 10px;" class="criteria-count"></p>
                     </div>
                     <div class="criteria alert" id="b_cycle_stations" data-criteria-type="b_cycle_stations">
-                        <h5>B-Cycle Stations <small class="distance-label"></small></h5>
+                        <h5><input type="checkbox" data-criteria-type="b_cycle_stations" class="toggle" style="vertical-align: top;" checked> B-Cycle Stations <small class="distance-label"></small></h5>
                         <div class="criteria-slider"></div>
                         <p style="margin-top: 10px;" class="criteria-count"></p>
                     </div>

@@ -192,16 +192,19 @@ var dhc = {};
             }
             $('#location').show();
         },
-        clearFacilities = function () {
-
+        clearFacilities = function (criteria_type) {
+            criteria[criteria_type].layer.clearLayers();
         },
         updateFacilities = function () {
             $('.criteria').each(function (i, o) {
                 var $criteria_div = $(o),
+                    $check = $criteria_div.find('.toggle'),
                     criteria_type = $criteria_div.data('criteria-type'),
                     criteria_settings = criteria[criteria_type].slider_settings,
                     $criteria_slider = $criteria_div.find('.criteria-slider');
-                adjustCriteriaValue(criteria_type, $criteria_slider.slider('value'));
+                if ($check.attr('checked')) {
+                    adjustCriteriaValue(criteria_type, $criteria_slider.slider('value'));
+                }
             });
         },
         criteria = {
@@ -302,5 +305,20 @@ var dhc = {};
                 adjustCriteriaValue(criteria_type, ui.value);
             }
         }).slider('value', criteria_settings.value);
+    });
+
+    $('.toggle').on('click', function (event) {
+        var $check = $(this),
+            $criteria_div = $check.parent().parent(),
+            criteria_type = $criteria_div.data('criteria-type'),
+            $slider = $check.parent().siblings('.criteria-slider'),
+            disabled = !$check.attr('checked');
+        $slider.slider('option', 'disabled', disabled);
+        $criteria_div[disabled ? 'addClass' : 'removeClass']('disabled');
+        if (disabled) {
+            clearFacilities(criteria_type);
+        } else {
+            getCriteriaPoints(criteria_type, $slider.slider('value'));
+        }
     });
 }())
