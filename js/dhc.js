@@ -71,7 +71,6 @@ var dhc = {};
             };
             $.ajax({
                 url: 'http://gis.drcog.org/REST/v1/ws_geo_bufferpoint.php?' + $.param(params) + '&fields=' + fields.join(',') + ',' + 'st_asgeojson(transform(the_geom,4326))+as+geojson',
-                data: params,
                 dataType: 'jsonp',
                 success: function (data) {
                     processCriteriaPoints(criteria_type, data);
