@@ -21,7 +21,8 @@ var dhc = {};
                         iconSize: [32, 37],
                         iconAnchor: [16, 37],
                         popupAnchor: [0, -28]
-                    })
+                    }),
+                    zIndexOffset: 1000
                 });
             }
         });
@@ -117,32 +118,7 @@ var dhc = {};
         },
         adjustCriteriaValue = function (criteria_type, value) {
             var this_criteria = criteria[criteria_type];
-            if (!this_criteria.layer) {
-                this_criteria.layer = new L.GeoJSON(null, {
-                    pointToLayer: function (feature, latlng) {
-                        return L.marker(latlng, {
-                            icon: L.icon({
-                                iconUrl: 'img/markers/' + this_criteria.icon_name,
-                                iconSize: [32, 37],
-                                iconAnchor: [16, 37],
-                                popupAnchor: [0, -28]
-                            })
-                        });
-                    },
-                    onEachFeature: function (feature, layer) {
-                        if (feature && feature.properties) {
-                            var popup_content = '';
-                            for (key in feature.properties) {
-                                popup_content += '<strong>' + key + '</strong>: ' + feature.properties[key] + '<br>';
-                            }
-                            layer.bindPopup(popup_content);
-                        }
-                        
-                    }
-                });
-                dhc.map.addLayer(criteria[criteria_type].layer);
-            }
-            criteria[criteria_type].layer.clearLayers();
+            this_criteria.layer.clearLayers();
             getCriteriaPoints(criteria_type, value);
         },
         getProjectedPoint = function (point) {
@@ -254,8 +230,6 @@ var dhc = {};
         ]
     });
 
-    dhc.map.addLayer(geocode_layer);
-
     L.control.layers({'Road': road_layer, 'Satellite': satellite_layer}, {}).addTo(dhc.map);
 
     $('#address-form').on('submit', function (event) {
@@ -288,7 +262,8 @@ var dhc = {};
     $('.criteria').each(function (i, o) {
         var $criteria_div = $(o),
             criteria_type = $criteria_div.data('criteria-type'),
-            criteria_settings = criteria[criteria_type].slider_settings,
+            this_criteria = criteria[criteria_type],
+            criteria_settings = this_criteria.slider_settings,
             $criteria_slider = $criteria_div.find('.criteria-slider');
         $criteria_slider.slider({
             min: criteria_settings.min,
@@ -305,7 +280,32 @@ var dhc = {};
                 adjustCriteriaValue(criteria_type, ui.value);
             }
         }).slider('value', criteria_settings.value);
+        this_criteria.layer = new L.GeoJSON(null, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {
+                    icon: L.icon({
+                        iconUrl: 'img/markers/' + this_criteria.icon_name,
+                        iconSize: [32, 37],
+                        iconAnchor: [16, 37],
+                        popupAnchor: [0, -28]
+                    })
+                });
+            },
+            onEachFeature: function (feature, layer) {
+                if (feature && feature.properties) {
+                    var popup_content = '';
+                    for (key in feature.properties) {
+                        popup_content += '<strong>' + key + '</strong>: ' + feature.properties[key] + '<br>';
+                    }
+                    layer.bindPopup(popup_content);
+                }
+                
+            }
+        });
+        dhc.map.addLayer(criteria[criteria_type].layer);
     });
+
+    dhc.map.addLayer(geocode_layer);
 
     $('.toggle').on('click', function (event) {
         var $check = $(this),

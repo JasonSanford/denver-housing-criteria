@@ -12,17 +12,34 @@
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.css">
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
     <style type="text/css">
-      body {
-          padding-top: 60px;
-          padding-bottom: 40px;
-      }
-      .disabled {
-          background-color: #e0e0e0;
-          border-color: #999999;
-      }
-      .disabled h5 {
-          color: #999999;
-      }
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+        #map-wrapper {
+            height: 600px;
+        }
+        #map-container {
+            height: 100%;
+        }
+        .disabled {
+            background-color: #e0e0e0;
+            border-color: #999999;
+        }
+        .disabled h5 {
+            color: #999999;
+        }
+        @media (max-width: 480px) {
+            body {
+                padding-top: 0px;
+            }
+            #map-wrapper {
+                height: 300px;
+            }
+            .criteria {
+                padding: 0 15px 0 10px;
+            }
+        }
     </style>
 </head>
 
@@ -75,13 +92,10 @@
                     
                 </div>
             </div>
-            <div class="span8" style="height: 600px;">
-                <div id="map-container" style="height: 100%;"></div>
+            <div class="span8" id="map-wrapper">
+                <div id="map-container"></div>
             </div>
         </div>
-        <footer>
-            <p>&copy; Jason Sanford 2013</p>
-        </footer>
     </div>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
