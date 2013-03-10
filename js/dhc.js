@@ -3,7 +3,7 @@ var dhc = {};
 (function () {
     var BING_MAPS_KEY = 'AuRei7ImMP3dpPg_ZXMtaetmhQayDq2w9Z8EyMiIPUo9LDPvFln2RaJh5nxwLMkT',
         start_location = new L.LatLng(39.7357, -104.951),
-        road_layer = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-xu5k4lii/{z}/{x}/{y}.png', {
+        road_layer = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.png', {
                 maxZoom: 17,
                 subdomains: ['a', 'b', 'c', 'd'],
                 attribution: 'Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
@@ -33,7 +33,7 @@ var dhc = {};
                 point = data.resourceSets[0].resources[0].point;
                 point.coordinates = [point.coordinates[1], point.coordinates[0]];
 
-                setCurrentLocation(address, point)
+                setCurrentLocation(address, point);
                 
             } else {
                 setCurrentLocation(address, null);
@@ -44,7 +44,7 @@ var dhc = {};
                 var $criteria_div = $(o),
                     criteria_div_type = $criteria_div.data('criteria-type');
                 if (criteria_div_type === criteria_type) {
-                    $criteria_div.find('.distance-label').html('< ' + value + ' mile' + (value === 1 ? '' : 's'))
+                    $criteria_div.find('.distance-label').html('< ' + value + ' mile' + (value === 1 ? '' : 's'));
                     return false;
                 }
             });
@@ -85,7 +85,7 @@ var dhc = {};
                 var feature_collection = {
                     type: 'FeatureCollection',
                     features: []
-                }
+                };
                 for (i in data.rows) {
                     var geojson,
                         row = data.rows[i].row,
@@ -101,7 +101,7 @@ var dhc = {};
                         type: 'Feature',
                         geometry: geojson,
                         properties: properties
-                    }
+                    };
                     feature_collection.features.push(feature);
                 }
                 this_criteria.layer.addData(feature_collection);
@@ -250,7 +250,7 @@ var dhc = {};
             success: function (data) {
                 bingMapsCallback(data, address);
             }
-        })
+        });
     });
 
     $('#paste-example').on('click', function (event) {
@@ -321,4 +321,4 @@ var dhc = {};
             getCriteriaPoints(criteria_type, $slider.slider('value'));
         }
     });
-}())
+}());
