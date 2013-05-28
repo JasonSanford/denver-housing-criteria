@@ -1,7 +1,7 @@
 var dhc = {};
 
 (function () {
-    var BING_MAPS_KEY = 'AuRei7ImMP3dpPg_ZXMtaetmhQayDq2w9Z8EyMiIPUo9LDPvFln2RaJh5nxwLMkT',
+    var BING_MAPS_KEY = 'AmKz8OuBnDG9BhH-rwEg_A-MfR2YhHQS5LzOzcoHycCsD7FpJ4V8y90uifxBSu46',
         start_location = new L.LatLng(39.7357, -104.951),
         road_layer = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.png', {
                 maxZoom: 17,
