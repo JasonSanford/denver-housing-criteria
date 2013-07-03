@@ -3,7 +3,7 @@ var dhc = {};
 (function () {
     var BING_MAPS_KEY = 'AuRei7ImMP3dpPg_ZXMtaetmhQayDq2w9Z8EyMiIPUo9LDPvFln2RaJh5nxwLMkT',
         start_location = new L.LatLng(39.7357, -104.951),
-        road_layer = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-vita0cry/{z}/{x}/{y}.png', {
+        road_layer = new L.TileLayer('http://{s}.tiles.mapbox.com/v3/jcsanford.map-qh86l7s4/{z}/{x}/{y}.png', {
                 maxZoom: 17,
                 subdomains: ['a', 'b', 'c', 'd'],
                 attribution: 'Map data (c) <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors, CC-BY-SA.'
